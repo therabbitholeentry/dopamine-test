@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026最新網路爆紅心理測驗：測驗你的戀愛腦/多巴胺指數！</title>
     <style>
-        /* 乾淨極簡的台灣/歐美雙風配色 */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: linear-gradient(135deg, #1e1e2f 0%, #111119 100%);
             color: #ffffff;
             margin: 0;
@@ -18,7 +17,6 @@
             min-height: 100vh;
             justify-content: space-between;
         }
-        /* 頂部切換語言按鈕 */
         .lang-bar {
             width: 100%;
             display: flex;
@@ -36,9 +34,6 @@
             font-size: 14px;
             transition: all 0.3s;
         }
-        .lang-btn:hover { background: rgba(255, 255, 255, 0.2); }
-        
-        /* 遊戲核心卡片 */
         .game-container {
             max-width: 500px;
             width: 90%;
@@ -50,13 +45,11 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             margin: auto;
-            transition: opacity 0.5s ease; /* 療癒轉場動畫核心 */
+            transition: opacity 0.4s ease;
         }
         h1 { font-size: 26px; margin-bottom: 10px; color: #ff477e; }
         .sub-title { font-size: 14px; color: #aaa; margin-bottom: 30px; }
         .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 30px; min-height: 60px; }
-        
-        /* 漂亮又好按的按鈕 */
         .btn-option {
             width: 100%;
             background: #ff477e;
@@ -68,12 +61,10 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.2s;
         }
         .btn-option:active { transform: scale(0.98); }
         .btn-option.secondary { background: #477eff; }
-        
-        /* 動態彈出 OS 對話框 */
         .os-box {
             background: rgba(255, 255, 255, 0.1);
             border-left: 4px solid #ff477e;
@@ -83,11 +74,7 @@
             font-style: italic;
             color: #ffb7ce;
             display: none;
-            animation: popIn 0.3s ease-out;
         }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        /* 預留給 Google AdSense 的乾淨廣告區塊 */
         .adsense-placeholder {
             width: 100%;
             max-width: 728px;
@@ -99,7 +86,6 @@
             justify-content: center;
             font-size: 12px;
             color: rgba(255, 255, 255, 0.2);
-            text-transform: uppercase;
             letter-spacing: 2px;
             margin-top: 20px;
         }
@@ -107,18 +93,16 @@
 </head>
 <body>
 
-    <!-- 語言切換列 -->
     <div class="lang-bar">
         <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">🌐 EN</button>
     </div>
 
-    <!-- 遊戲主體 -->
     <div class="game-container" id="gameBox">
         <div id="startScreen">
-            <div class="sub-title" id="tSub">腦洞雜貨店 ｜ BrainRot Bazaar</div>
+            <div class="sub-title">秘兔局 ｜ The Rabbit Hole</div>
             <h1 id="tTitle">💔 多巴胺破產大檢測 💔</h1>
             <p class="question-text" id="tDesc">你每天花了多少時間在手機的時空黑洞裡？準備好接受理智的拷問了嗎？</p>
-            <button class="btn-option" id="tStartBtn" onclick="startTest()">開始檢測 / START</button>
+            <button class="btn-option" onclick="startTest()">開始檢測 / START</button>
         </div>
         <div id="quizScreen" style="display:none;">
             <p class="question-text" id="qText"></p>
@@ -128,13 +112,11 @@
         </div>
     </div>
 
-    <!-- 預留 Google 廣告欄位（躺著賺錢的底層機制） -->
     <div class="adsense-placeholder">
         Sponsored / Google AdSense Advertisement Will Load Here
     </div>
 
     <script>
-        // 中英文核心數據庫
         let currentLang = 'zh';
         let currentStep = 0;
         let score = 0;
@@ -158,7 +140,7 @@
                     { q: "You sat down to watch a movie on Netflix. But the moment there's a 10-second slow scene, your hand automatically reaches for your phone...", a: "【Dual Wielding】TV on, phone in hand. Consuming double the content at once.", b: "【Hide the Phone】Flip the phone face down on the other side of the couch.", osA: "Total Dopamine Bankruptcy. Your attention span is officially shorter than a goldfish.", osB: "Sanity +10. Fighting a lonely holy war against Big Tech algorithms." }
                 ],
                 results: [
-                    { title: "🧠 Brain Completely Cooked", desc: "You are a total slave to dopamine! Your brain resembles a pizza microwaved 10 times. Toss your phone in the toilet now." },
+                    { title: "🧠 Brain Cooked", desc: "You are a total slave to dopamine! Your brain resembles a pizza microwaved 10 times. Toss your phone in the toilet now." },
                     { title: "📱 Screen-Time Refugee", desc: "Regretting your screen time by day, but crying while scrolling TikTok at 3 AM. You are trapped in the middle." }
                 ]
             }
@@ -209,9 +191,13 @@
                     updateQuestion();
                     document.getElementById('gameBox').style.opacity = '1';
                 }, 400);
-            }, 1800); // 讓玩家看完爆笑 OS 後才進下一題
+            }, 1800);
         }
 
-        function showResult() { let res = score <= 10 ? data[currentLang].results[0] : data[currentLang].results[1];
+        function showResult() {
+            let res = score <= 10 ? data[currentLang].results[0] : data[currentLang].results[1];
             document.getElementById('quizScreen').innerHTML = `<h1>${res.title}</h1><p class='question-text'>${res.desc}</p><button class='btn-option' onclick='location.reload()'>再測一次 / RETRY</button>`;
         }
+    </script>
+</body>
+</html>
