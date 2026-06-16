@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026最新網路爆紅心理測驗：測驗你的戀愛腦/多巴胺指數！</title>
+    <style>
+        /* 乾淨極簡的台灣/歐美雙風配色 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f 0%, #111119 100%);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: space-between;
+        }
+        /* 頂部切換語言按鈕 */
+        .lang-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .lang-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        
+        /* 遊戲核心卡片 */
+        .game-container {
+            max-width: 500px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: auto;
+            transition: opacity 0.5s ease; /* 療癒轉場動畫核心 */
+        }
+        h1 { font-size: 26px; margin-bottom: 10px; color: #ff477e; }
+        .sub-title { font-size: 14px; color: #aaa; margin-bottom: 30px; }
+        .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 30px; min-height: 60px; }
+        
+        /* 漂亮又好按的按鈕 */
+        .btn-option {
+            width: 100%;
+            background: #ff477e;
+            color: white;
+            border: none;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn-option:active { transform: scale(0.98); }
+        .btn-option.secondary { background: #477eff; }
+        
+        /* 動態彈出 OS 對話框 */
+        .os-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ff477e;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-style: italic;
+            color: #ffb7ce;
+            display: none;
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* 預留給 Google AdSense 的乾淨廣告區塊 */
+        .adsense-placeholder {
+            width: 100%;
+            max-width: 728px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 語言切換列 -->
+    <div class="lang-bar">
+        <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">🌐 EN</button>
+    </div>
+
+    <!-- 遊戲主體 -->
+    <div class="game-container" id="gameBox">
+        <div id="startScreen">
+            <div class="sub-title" id="tSub">腦洞雜貨店 ｜ BrainRot Bazaar</div>
+            <h1 id="tTitle">💔 多巴胺破產大檢測 💔</h1>
+            <p class="question-text" id="tDesc">你每天花了多少時間在手機的時空黑洞裡？準備好接受理智的拷問了嗎？</p>
+            <button class="btn-option" id="tStartBtn" onclick="startTest()">開始檢測 / START</button>
+        </div>
+        <div id="quizScreen" style="display:none;">
+            <p class="question-text" id="qText"></p>
+            <button class="btn-option" id="optA" onclick="choose(0)"></button>
+            <button class="btn-option secondary" id="optB" onclick="choose(1)"></button>
+            <div class="os-box" id="osBox"></div>
+        </div>
+    </div>
+
+    <!-- 預留 Google 廣告欄位（躺著賺錢的底層機制） -->
+    <div class="adsense-placeholder">
+        Sponsored / Google AdSense Advertisement Will Load Here
+    </div>
+
+    <script>
+        // 中英文核心數據庫
+        let currentLang = 'zh';
+        let currentStep = 0;
+        let score = 0;
+
+        const data = {
+            zh: {
+                questions: [
+                    { q: "早上鬧鐘響了，你本來只想拿手機關掉鬧鐘，結果不知不覺在床上躺著刷了 20 分鐘...", a: "【繼續刷】反正都遲到了，再看一部短影音就好。", b: "【痛苦放下】用盡全身力氣把手機扔到床尾，彈起來刷牙。", osA: "恭喜你！一天的開始就成功把大腦雙手奉獻給了多巴胺惡魔。", osB: "理智值＋10！雖然你的身體離開了床，但你的靈魂其實還留在脆（Threads）裡面。" },
+                    { q: "你只是想進廁所上個大號，但因為帶了手機進去，你感覺只過了 5 分鐘，一抬頭發現腿已經麻到站不起來了...", a: "【坐到腳麻】扶著牆壁慢慢站起來，一邊繼續看手機。", b: "【速戰速決】把手機放在洗手台上，上完立刻出來。", osA: "精緻窮的極致！你用健康的膝蓋換取了 30 分鐘無意義的快樂多巴胺。", osB: "理智值＋10！全台灣只有 5% 的人能抗拒在馬桶上刷短影音的魔力。" },
+                    { q: "晚上好不容易打開 Netflix 要看一部大片，結果只要劇情進入平淡期超過 10 秒，你的手就會不自覺地抓起桌上的手機開始刷...", a: "【雙管齊下】眼睛看電視，手裡刷手機，大腦同時接收雙倍多巴胺。", b: "【把手機藏起來】把手機反扣在沙發另一頭，強迫自己看電影。", osA: "多巴胺徹底破產！你現在的專注力已經比一條金魚還要短了。", osB: "理智值＋10！你正在跟現代科技進行一場史詩級的戒斷聖戰。" }
+                ],
+                results: [
+                    { title: "🧠 大腦已烤焦", desc: "你已經是多巴胺的終極奴隸了！你的大腦現在就像一塊被微波爐烤了十次的比薩，建議立刻把手機丟進馬桶進行物理大戒斷！" },
+                    { title: "📱 多巴胺難民", desc: "白天天天看著手機使用時間痛改前非，深夜一邊在床上刷短影音到流眼淚。你在理智與成癮的邊緣反覆橫跳。" }
+                ]
+            },
+            en: {
+                questions: [
+                    { q: "Your alarm goes off. You only unlocked your phone to turn it off, but now you’ve been doomscrolling in bed for 20 minutes...", a: "【Keep Scrolling】I’m already late anyway. Just one more Reel.", b: "【Force Stop】Throw the phone across the room and jump out of bed.", osA: "Huge L. You just handed your brain over to the dopamine demons first thing in the morning.", osB: "Sanity +10. Your body is brushing teeth, but your soul is still trapped in the algorithm." },
+                    { q: "You went into the bathroom for a quick poop. Because you brought your phone, your legs are now completely numb...", a: "【Embrace Numbness】Hold onto the wall to stand up while still looking at the screen.", b: "【Speedrun】Leave the phone on the counter and get out ASAP.", osA: "Cooked. You traded your knee health for 30 minutes of useless brainrot.", osB: "Sanity +10. Only 5% of humanity has the willpower to poop without a screen." },
+                    { q: "You sat down to watch a movie on Netflix. But the moment there's a 10-second slow scene, your hand automatically reaches for your phone...", a: "【Dual Wielding】TV on, phone in hand. Consuming double the content at once.", b: "【Hide the Phone】Flip the phone face down on the other side of the couch.", osA: "Total Dopamine Bankruptcy. Your attention span is officially shorter than a goldfish.", osB: "Sanity +10. Fighting a lonely holy war against Big Tech algorithms." }
+                ],
+                results: [
+                    { title: "🧠 Brain Completely Cooked", desc: "You are a total slave to dopamine! Your brain resembles a pizza microwaved 10 times. Toss your phone in the toilet now." },
+                    { title: "📱 Screen-Time Refugee", desc: "Regretting your screen time by day, but crying while scrolling TikTok at 3 AM. You are trapped in the middle." }
+                ]
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            document.getElementById('langBtn').innerText = currentLang === 'zh' ? '🌐 EN' : '🌐 中文';
+            if(currentStep === 0) {
+                document.getElementById('tTitle').innerText = currentLang === 'zh' ? '💔 多巴胺破產大檢測 💔' : '💔 Dopamine Bankruptcy Test 💔';
+                document.getElementById('tDesc').innerText = currentLang === 'zh' ? '你每天花了多少時間在手機的時空黑洞裡？' : 'How much of your life is consumed by the screen?';
+            } else {
+                updateQuestion();
+            }
+        }
+
+        function startTest() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            updateQuestion();
+        }
+
+        function updateQuestion() {
+            let qList = data[currentLang].questions;
+            if(currentStep < qList.length) {
+                document.getElementById('qText').innerText = qList[currentStep].q;
+                document.getElementById('optA').innerText = qList[currentStep].a;
+                document.getElementById('optB').innerText = qList[currentStep].b;
+                document.getElementById('osBox').style.display = 'none';
+            } else {
+                showResult();
+            }
+        }
+
+        function choose(option) {
+            let qList = data[currentLang].questions;
+            let osText = option === 0 ? qList[currentStep].osA : qList[currentStep].osB;
+            if(option === 1) score += 10;
+            
+            let osBox = document.getElementById('osBox');
+            osBox.innerText = osText;
+            osBox.style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('gameBox').style.opacity = '0';
+                setTimeout(() => {
+                    currentStep++;
+                    updateQuestion();
+                    document.getElementById('gameBox').style.opacity = '1';
+                }, 400);
+            }, 1800); // 讓玩家看完爆笑 OS 後才進下一題
+        }
+
+        function showResult() { let res = score <= 10 ? data[currentLang].results[0] : data[currentLang].results[1];
+            document.getElementById('quizScreen').innerHTML = `<h1>${res.title}</h1><p class='question-text'>${res.desc}</p><button class='btn-option' onclick='location.reload()'>再測一次 / RETRY</button>`;
+        }
