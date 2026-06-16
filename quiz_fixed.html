@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026最新網路爆紅心理測驗：手機成癮與多巴胺破產大檢測｜秘兔局 The Rabbit Hole</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e1e2f 0%, #111119 100%);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: space-between;
+        }
+        .lang-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .lang-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .game-container {
+            max-width: 500px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: auto;
+            transition: opacity 0.4s ease;
+        }
+        h1 { font-size: 26px; margin-bottom: 10px; color: #ff477e; }
+        .sub-title { font-size: 14px; color: #aaa; margin-bottom: 30px; }
+        .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 30px; min-height: 60px; }
+        
+        .progress-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 8px;
+            background-color: #ff477e;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .btn-option {
+            width: 100%;
+            background: #ff477e;
+            color: white;
+            border: none;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-option:active { transform: scale(0.98); }
+        .btn-option.secondary { background: #477eff; }
+        .btn-option:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .os-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ff477e;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-style: italic;
+            color: #ffb7ce;
+            display: none;
+        }
+        
+        .spinner {
+            display: none;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top-color: #ff477e;
+            margin: 30px auto;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .adsense-placeholder {
+            width: 100%;
+            max-width: 728px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 2px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lang-bar">
+        <button class="lang-btn" id="langBtn" onclick="toggleLanguage()">🌐 EN</button>
+    </div>
+
+    <div class="game-container" id="gameBox">
+        <div id="startScreen">
+            <div class="sub-title" id="tSub">秘兔局 ｜ The Rabbit Hole</div>
+            <h1 id="tTitle">💔 多巴胺破產大檢測 💔</h1>
+            <p class="question-text" id="tDesc">你每天花了多少時間在手機的時空黑洞裡？準備好接受理智的拷問了嗎？</p>
+            <button class="btn-option" id="startBtn" onclick="startTest()">開始檢測 / START</button>
+        </div>
+        
+        <div id="quizScreen" style="display:none;">
+            <div class="progress-container" id="progressContainer"><div class="progress-bar" id="progressBar"></div></div>
+            <p class="question-text" id="qText"></p>
+            <button class="btn-option" id="optA" onclick="choose(0)"></button>
+            <button class="btn-option secondary" id="optB" onclick="choose(1)"></button>
+            <div class="os-box" id="osBox"></div>
+        </div>
+
+        <div id="loadingScreen" style="display:none;">
+            <h2 id="loadText">大腦多巴胺數據分析中...</h2>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div class="adsense-placeholder">
+        Sponsored / Google AdSense Advertisement Will Load Here
+    </div>
+
+    <script>
+        let currentLang = 'zh';
+        let currentStep = 0;
+        let score = 0;
+        let isClickable = true;
+
+        const data = {
+            zh: {
+                startSub: "秘兔局 ｜ The Rabbit Hole",
+                startTitle: "💔 多巴胺破產大檢測 💔",
+                startDesc: "你每天花了多少時間在手機的時空黑洞裡？準備好接受理智的拷問了嗎？",
+                startBtn: "開始檢測 / START",
+                loading: "大腦多巴胺數據分析中...",
+                retryBtn: "再測一次 / RETRY",
+                questions: [
+                    { q: "早上鬧鐘響了，你本來只想拿手機關掉鬧鐘，結果不知不覺在床上躺著刷了 20 分鐘...", a: "【繼續刷】反正都遲到了，再看一部短影音就好。", b: "【痛苦放下】用盡全身力氣把手機扔到床尾，彈起來刷牙。", osA: "恭喜你！一天的開始就成功把大腦雙手奉獻給了多巴胺惡魔。", osB: "理智值＋10！雖然你的身體離開了床，但你的靈魂其實還留在脆（Threads）裡面。" },
+                    { q: "你只是想進廁所上個大號，但因為帶了手機進去，你感覺只過了 5 分鐘，一抬頭發現腿已經麻到站不起來了...", a: "【坐到腳麻】扶著牆壁慢慢站起來，一邊繼續看手機。", b: "【速戰速決】把手機放在洗手台上，上完立刻出來。", osA: "精緻窮的極致！你用健康的膝蓋換取了 30 分鐘無意義的快樂多巴胺。", osB: "理智值＋10！全台灣只有 5% 的人能抗拒在馬桶上刷短影音的魔力。" },
+                    { q: "晚上好開 Netflix 要看大片，結果只要劇情平淡超過 10 秒，你的手就會不自覺抓起手機開始刷...", a: "【雙管齊下】眼睛看電視，手裡刷手機，大腦同時接收雙倍多巴胺。", b: "【把手機藏起來】把手機反扣在沙發另一頭，強迫自己看電影。", osA: "多巴胺徹底破產！你現在的專注力已經比一條金魚還要短了。", osB: "理智值＋10！你正在跟現代科技進行一場史詩級的戒斷聖戰。" },
+                    { q: "騎車或走路遇到一個 90 秒的紅綠燈，周遭的人紛紛掏出手機，這時候你的口袋也開始像火燒一樣發癢...", a: "【掏出手機】不管啦，解鎖看一下有沒有人回訊息（其實根本沒有）。", b: "【看天空發呆】手插口袋，默默看著秒數倒數，觀察路人。", osA: "沒救了！你連 90 秒的無聊都無法忍受，大腦已經被制約成猴子了。", osB: "理智值＋10！你成功在大腦裡保留了一塊不受數位污染的淨土。" }
+                ],
+                results: [
+                    { title: "🧠 大腦已烤焦", desc: "你已經是多巴胺的終極奴隸了！你的大腦現在就像一塊被微波爐烤了十次的比薩，建議立刻把手機丟進馬桶進行物理大戒斷！" },
+                    { title: "📱 多巴胺難民", desc: "白天天天看著手機使用時間痛改前非，深夜一邊在床上刷短影音到流眼淚。你在理智與成癮的邊緣反覆橫跳。" }
+                ]
+            },
+            en: {
+                startSub: "秘兔局 ｜ The Rabbit Hole",
+                startTitle: "💔 Dopamine Bankruptcy Test 💔",
+                startDesc: "How much of your life is consumed by the screen? Ready for a reality check?",
+                startBtn: "START TEST",
+                loading: "Analyzing brain dopamine levels...",
+                retryBtn: "RETRY",
+                questions: [
+                    { q: "Your alarm goes off. You unlocked your phone to turn it off, but now you've been doomscrolling for 20 minutes...", a: "【Keep Scrolling】I'm already late anyway. Just one more Reel.", b: "【Force Stop】Throw the phone across the room and jump out of bed.", osA: "Huge L. You just handed your brain over to the dopamine demons first thing in the morning.", osB: "Sanity +10. Your body is brushing teeth, but your soul is still trapped in the algorithm." },
+                    { q: "You went into the bathroom for a quick poop. Because you brought your phone, your legs are now completely numb...", a: "【Embrace Numbness】Hold onto the wall to stand up while still looking at the screen.", b: "【Speedrun】Leave the phone on the counter and get out ASAP.", osA: "Cooked. You traded your knee health for 30 minutes of useless brainrot.", osB: "Sanity +10. Only 5% of humanity has the willpower to poop without a screen." },
+                    /* ✅ 修正：補上正確的 b 選項文字、osA、osB */
+                    { q: "You sat down to watch a movie on Netflix. But the moment there's a 10-second slow scene, your hand automatically reaches for your phone...", a: "【Dual Wielding】TV on, phone in hand. Consuming double the content at once.", b: "【Hide the Phone】Flip it face-down on the other end of the couch and force yourself to watch.", osA: "Total Dopamine Bankruptcy. Your attention span is officially shorter than a goldfish.", osB: "Sanity +10. Fighting a lonely holy war against Big Tech algorithms." },
+                    { q: "You're waiting at a 90-second red light. Everyone around you pulls out their phone, and your pocket starts itching...", a: "【Check the Phone】Unlock it just to check notifications (there are none).", b: "【Stare into Space】Keep your hands in your pockets, watch the countdown.", osA: "We're so cooked. Bro can't even survive 90 seconds of boredom. Dopamine slave behavior.", osB: "Sanity +10. You just saved your brain from an extra dose of digital pollution." }
+                ],
+                results: [
+                    { title: "🧠 Brain Cooked", desc: "You are a total slave to dopamine! Your brain resembles a pizza microwaved 10 times. Toss your phone in the toilet now." },
+                    { title: "📱 Screen-Time Refugee", desc: "Regretting your screen time by day, but crying while scrolling TikTok at 3 AM. You are trapped in the middle." }
+                ]
+            }
+        };
+
+        function toggleLanguage() {
+            if (currentStep > 0) return;
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            document.getElementById('langBtn').innerText = currentLang === 'zh' ? '🌐 EN' : '🌐 中文';
+            document.getElementById('tSub').innerText = data[currentLang].startSub;
+            document.getElementById('tTitle').innerText = data[currentLang].startTitle;
+            document.getElementById('tDesc').innerText = data[currentLang].startDesc;
+            document.getElementById('startBtn').innerText = data[currentLang].startBtn;
+        }
+
+        function startTest() {
+            score = 0;
+            currentStep = 0;
+            document.getElementById('langBtn').disabled = true;
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+            document.getElementById('progressContainer').style.display = 'block';
+            updateQuestion();
+        }
+
+        function updateQuestion() {
+            let qList = data[currentLang].questions;
+            if(currentStep < qList.length) {
+                let progressPercent = (currentStep / qList.length) * 100;
+                document.getElementById('progressBar').style.width = progressPercent + '%';
+
+                document.getElementById('qText').innerText = qList[currentStep].q;
+                document.getElementById('optA').innerText = qList[currentStep].a;
+                document.getElementById('optB').innerText = qList[currentStep].b;
+                document.getElementById('osBox').style.display = 'none';
+                
+                document.getElementById('optA').disabled = false;
+                document.getElementById('optB').disabled = false;
+                isClickable = true;
+            } else {
+                showLoadingAndResult();
+            }
+        }
+
+        function choose(option) {
+            if (!isClickable) return;
+            isClickable = false;
+            
+            document.getElementById('optA').disabled = true;
+            document.getElementById('optB').disabled = true;
+
+            let qList = data[currentLang].questions;
+            let osText = option === 0 ? qList[currentStep].osA : qList[currentStep].osB;
+            
+            if(option === 1) score += 10;
+            
+            let osBox = document.getElementById('osBox');
+            osBox.innerText = osText;
+            osBox.style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('gameBox').style.opacity = '0';
+                setTimeout(() => {
+                    currentStep++;
+                    updateQuestion();
+                    document.getElementById('gameBox').style.opacity = '1';
+                }, 400);
+            }, 1800);
+        }
+
+        function showLoadingAndResult() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('loadingScreen').style.display = 'block';
+            document.getElementById('loadText').innerText = data[currentLang].loading;
+            document.querySelector('.spinner').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                /* ✅ 修正：score < 20 才顯示「大腦烤焦」（4題中少於2題選B） */
+                let res = score < 20 ? data[currentLang].results[0] : data[currentLang].results[1];
+                
+                document.getElementById('quizScreen').innerHTML = `
+                    <h1>${res.title}</h1>
+                    <p class='question-text'>${res.desc}</p>
+                    <button class='btn-option' onclick='resetGame()'>${data[currentLang].retryBtn}</button>
+                `;
+                document.getElementById('quizScreen').style.display = 'block';
+            }, 2500);
+        }
+
+        function resetGame() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
