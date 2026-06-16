@@ -105,6 +105,9 @@
             <button class="btn-option" onclick="startTest()">開始檢測 / START</button>
         </div>
         <div id="quizScreen" style="display:none;">
+            <div id="progress"
+     style="margin-bottom:15px;color:#aaa;font-size:14px;">
+        </div>
             <p class="question-text" id="qText"></p>
             <button class="btn-option" id="optA" onclick="choose(0)"></button>
             <button class="btn-option secondary" id="optB" onclick="choose(1)"></button>
@@ -117,9 +120,10 @@
     </div>
 
     <script>
-        let currentLang = 'zh';
+        et currentLang = 'zh';
         let currentStep = 0;
         let score = 0;
+        let answered = false;
 
         const data = {
             zh: {
@@ -129,10 +133,23 @@
                     { q: "晚上好不容易打開 Netflix 要看一部大片，結果只要劇情進入平淡期超過 10 秒，你的手就會不自覺地抓起桌上的手機開始刷...", a: "【雙管齊下】眼睛看電視，手裡刷手機，大腦同時接收雙倍多巴胺。", b: "【把手機藏起來】把手機反扣在沙發另一頭，強迫自己看電影。", osA: "多巴胺徹底破產！你現在的專注力已經比一條金魚還要短了。", osB: "理智值＋10！你正在跟現代科技進行一場史詩級的戒斷聖戰。" }
                 ],
                 results: [
-                    { title: "🧠 大腦已烤焦", desc: "你已經是多巴胺的終極奴隸了！你的大腦現在就像一塊被微波爐烤了十次的比薩，建議立刻把手機丟進馬桶進行物理大戒斷！" },
-                    { title: "📱 多巴胺難民", desc: "白天天天看著手機使用時間痛改前非，深夜一邊在床上刷短影音到流眼淚。你在理智與成癮的邊緣反覆橫跳。" }
-                ]
-            },
+                {
+                        title:"🧟 多巴胺喪屍",
+                        desc:"你的手已經不是你的手，而是演算法的延伸器官。"
+                        },
+                        {
+                        title:"🔥 重度成癮",
+                        desc:"你知道自己刷太久，但下一秒又打開短影音。"
+                        },
+                        {
+                        title:"🙂 一般人類",
+                        desc:"偶爾失控，但大致還保有自主意志。"
+                        },
+                        {
+                        title:"🦄 稀有清醒者",
+                        desc:"你居然能控制手機，而不是被手機控制。"
+                        }
+                        ]
             en: {
                 questions: [
                     { q: "Your alarm goes off. You only unlocked your phone to turn it off, but now you’ve been doomscrolling in bed for 20 minutes...", a: "【Keep Scrolling】I’m already late anyway. Just one more Reel.", b: "【Force Stop】Throw the phone across the room and jump out of bed.", osA: "Huge L. You just handed your brain over to the dopamine demons first thing in the morning.", osB: "Sanity +10. Your body is brushing teeth, but your soul is still trapped in the algorithm." },
@@ -140,13 +157,100 @@
                     { q: "You sat down to watch a movie on Netflix. But the moment there's a 10-second slow scene, your hand automatically reaches for your phone...", a: "【Dual Wielding】TV on, phone in hand. Consuming double the content at once.", b: "【Hide the Phone】Flip the phone face down on the other side of the couch.", osA: "Total Dopamine Bankruptcy. Your attention span is officially shorter than a goldfish.", osB: "Sanity +10. Fighting a lonely holy war against Big Tech algorithms." }
                 ],
                 results: [
-                    { title: "🧠 Brain Cooked", desc: "You are a total slave to dopamine! Your brain resembles a pizza microwaved 10 times. Toss your phone in the toilet now." },
-                    { title: "📱 Screen-Time Refugee", desc: "Regretting your screen time by day, but crying while scrolling TikTok at 3 AM. You are trapped in the middle." }
-                ]
-            }
-        };
-
+                        {
+                        title:"🧟 Dopamine Zombie",
+                        desc:"Your hand is no longer yours. It belongs to the algorithm."
+                        },
+                        {
+                        title:"🔥 Highly Addicted",
+                        desc:"You know you scroll too much, yet you keep opening apps."
+                        },
+                        {
+                        title:"🙂 Mostly Normal",
+                        desc:"You lose control sometimes, but still retain free will."
+                        },
+                        {
+                        title:"🦄 Rarely Enlightened",
+                        desc:"You control your phone instead of your phone controlling you."
+                        }
+                        ]
+                function getShareText(resultTitle){
+                
+                    if(currentLang === 'zh'){
+                        return `我剛測出「${resultTitle}」！你的多巴胺指數有多高？快來測看看👇`;
+                    }
+                
+                    return `I got "${resultTitle}" on the Dopamine Test!`;
+                }
+                
+                async function shareResult(){
+                
+                    let resultTitle =
+                        document.getElementById('resultTitle').innerText;
+                
+                    let shareText =
+                        getShareText(resultTitle);
+                
+                    if(navigator.share){
+                
+                        try{
+                
+                            await navigator.share({
+                                title: resultTitle,
+                                text: shareText,
+                                url: window.location.href
+                            });
+                
+                        }catch(e){}
+                
+                    }else{
+                
+                        navigator.clipboard.writeText(
+                            shareText + '\n' + window.location.href
+                        );
+                
+                        alert(
+                            currentLang === 'zh'
+                            ? '分享內容已複製'
+                            : 'Copied'
+                        );
+                    }
+                }
+                
+                function copyResult(){
+                
+                    let resultTitle =
+                        document.getElementById('resultTitle').innerText;
+                
+                    let shareText =
+                        getShareText(resultTitle);
+                
+                    navigator.clipboard.writeText(
+                        shareText + '\n' + window.location.href
+                    );
+                
+                    alert(
+                        currentLang === 'zh'
+                        ? '已複製到剪貼簿'
+                        : 'Copied'
+                    );
+                }
         function toggleLanguage() {
+        if(currentStep > 0){
+
+        alert(
+            currentLang === 'zh'
+            ? '測驗進行中無法切換語言'
+            : 'Cannot switch language during the test'
+        );
+
+        return;
+    }
+
+    currentLang =
+        currentLang === 'zh'
+        ? 'en'
+        : 'zh';
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             document.getElementById('langBtn').innerText = currentLang === 'zh' ? '🌐 EN' : '🌐 中文';
             if(currentStep === 0) {
@@ -164,40 +268,128 @@
         }
 
         function updateQuestion() {
+
             let qList = data[currentLang].questions;
+
             if(currentStep < qList.length) {
-                document.getElementById('qText').innerText = qList[currentStep].q;
-                document.getElementById('optA').innerText = qList[currentStep].a;
-                document.getElementById('optB').innerText = qList[currentStep].b;
-                document.getElementById('osBox').style.display = 'none';
-            } else {
-                showResult();
-            }
-        }
 
-        function choose(option) {
-            let qList = data[currentLang].questions;
-            let osText = option === 0 ? qList[currentStep].osA : qList[currentStep].osB;
-            if(option === 1) score += 10;
-            
-            let osBox = document.getElementById('osBox');
-            osBox.innerText = osText;
-            osBox.style.display = 'block';
+              document.getElementById('progress').innerText =
+            currentLang === 'zh'
+            ? `第 ${currentStep + 1} 題 / 共 ${qList.length} 題`
+            : `Question ${currentStep + 1}/${qList.length}`;
 
-            setTimeout(() => {
-                document.getElementById('gameBox').style.opacity = '0';
-                setTimeout(() => {
-                    currentStep++;
-                    updateQuestion();
-                    document.getElementById('gameBox').style.opacity = '1';
-                }, 400);
-            }, 1800);
-        }
+             document.getElementById('qText').innerText =
+              qList[currentStep].q;
+
+            document.getElementById('optA').innerText =
+            qList[currentStep].a;
+
+            document.getElementById('optB').innerText =
+            qList[currentStep].b;
+
+           document.getElementById('osBox').style.display = 'none';
+
+           answered = false;
+
+          } else {
+
+        showResult();
+
+    }
+}
+
+       function choose(option) {
+
+    if(answered) return;
+
+    answered = true;
+
+    let qList = data[currentLang].questions;
+
+    let osText =
+        option === 0
+        ? qList[currentStep].osA
+        : qList[currentStep].osB;
+
+    if(option === 1){
+        score += 10;
+    }
+
+    let osBox =
+        document.getElementById('osBox');
+
+    osBox.innerText = osText;
+    osBox.style.display = 'block';
+
+    document.getElementById('optA').disabled = true;
+    document.getElementById('optB').disabled = true;
+
+    setTimeout(() => {
+
+        document.getElementById('gameBox').style.opacity = '0';
+
+        setTimeout(() => {
+
+            currentStep++;
+
+            updateQuestion();
+
+            document.getElementById('optA').disabled = false;
+            document.getElementById('optB').disabled = false;
+
+            document.getElementById('gameBox').style.opacity = '1';
+
+        }, 400);
+
+    }, 1800);
+}
 
         function showResult() {
-            let res = score <= 10 ? data[currentLang].results[0] : data[currentLang].results[1];
-            document.getElementById('quizScreen').innerHTML = `<h1>${res.title}</h1><p class='question-text'>${res.desc}</p><button class='btn-option' onclick='location.reload()'>再測一次 / RETRY</button>`;
-        }
-    </script>
+
+    let res;
+
+    if(score === 0){
+        res = data[currentLang].results[0];
+    }
+    else if(score === 10){
+        res = data[currentLang].results[1];
+    }
+    else if(score === 20){
+        res = data[currentLang].results[2];
+    }
+    else{
+        res = data[currentLang].results[3];
+    }
+
+    document.getElementById('quizScreen').innerHTML = `
+        <h1 id="resultTitle">${res.title}</h1>
+
+        <p class="question-text">
+            ${res.desc}
+        </p>
+
+        <p>
+            ${currentLang === 'zh'
+                ? '你的理智分數'
+                : 'Your sanity score'}
+            ：${score}/30
+        </p>
+
+        <button class="btn-option"
+                onclick="shareResult()">
+            📤 分享結果
+        </button>
+
+        <button class="btn-option secondary"
+                onclick="copyResult()">
+            📋 複製分享文字
+        </button>
+
+        <button class="btn-option"
+                onclick="location.reload()">
+            再測一次 / RETRY
+        </button>
+    `;
+}
 </body>
 </html>
