@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 優化 SEO Title，解決標題與內容不符問題 -->
     <title>2026最新網路爆紅心理測驗：手機成癮與多巴胺破產大檢測｜秘兔局 The Rabbit Hole</title>
     <style>
         body {
@@ -56,7 +55,6 @@
         .sub-title { font-size: 14px; color: #aaa; margin-bottom: 30px; }
         .question-text { font-size: 18px; line-height: 1.6; margin-bottom: 30px; min-height: 60px; }
         
-        /* 進度條樣式 */
         .progress-container {
             width: 100%;
             background-color: rgba(255, 255, 255, 0.1);
@@ -100,7 +98,6 @@
             display: none;
         }
         
-        /* 假分析動畫轉圈圈 */
         .spinner {
             display: none;
             width: 50px;
@@ -136,7 +133,6 @@
     </div>
 
     <div class="game-container" id="gameBox">
-        <!-- 歡迎開始畫面 -->
         <div id="startScreen">
             <div class="sub-title" id="tSub">秘兔局 ｜ The Rabbit Hole</div>
             <h1 id="tTitle">💔 多巴胺破產大檢測 💔</h1>
@@ -144,7 +140,6 @@
             <button class="btn-option" id="startBtn" onclick="startTest()">開始檢測 / START</button>
         </div>
         
-        <!-- 測驗中畫面 -->
         <div id="quizScreen" style="display:none;">
             <div class="progress-container" id="progressContainer"><div class="progress-bar" id="progressBar"></div></div>
             <p class="question-text" id="qText"></p>
@@ -153,7 +148,6 @@
             <div class="os-box" id="osBox"></div>
         </div>
 
-        <!-- 假分析動畫畫面（增加玩家停留時間，賺點閱費） -->
         <div id="loadingScreen" style="display:none;">
             <h2 id="loadText">大腦多巴胺數據分析中...</h2>
             <div class="spinner"></div>
@@ -168,7 +162,7 @@
         let currentLang = 'zh';
         let currentStep = 0;
         let score = 0;
-        let isClickable = true; // 防止瘋狂連點機制
+        let isClickable = true;
 
         const data = {
             zh: {
@@ -197,10 +191,11 @@
                 loading: "Analyzing brain dopamine levels...",
                 retryBtn: "RETRY",
                 questions: [
-                    { q: "Your alarm goes off. You unlocked your phone to turn it off, but now you’ve been doomscrolling for 20 minutes...", a: "【Keep Scrolling】I’m already late anyway. Just one more Reel.", b: "【Force Stop】Throw the phone across the room and jump out of bed.", osA: "Huge L. You just handed your brain over to the dopamine demons first thing in the morning.", osB: "Sanity +10. Your body is brushing teeth, but your soul is still trapped in the algorithm." },
+                    { q: "Your alarm goes off. You unlocked your phone to turn it off, but now you've been doomscrolling for 20 minutes...", a: "【Keep Scrolling】I'm already late anyway. Just one more Reel.", b: "【Force Stop】Throw the phone across the room and jump out of bed.", osA: "Huge L. You just handed your brain over to the dopamine demons first thing in the morning.", osB: "Sanity +10. Your body is brushing teeth, but your soul is still trapped in the algorithm." },
                     { q: "You went into the bathroom for a quick poop. Because you brought your phone, your legs are now completely numb...", a: "【Embrace Numbness】Hold onto the wall to stand up while still looking at the screen.", b: "【Speedrun】Leave the phone on the counter and get out ASAP.", osA: "Cooked. You traded your knee health for 30 minutes of useless brainrot.", osB: "Sanity +10. Only 5% of humanity has the willpower to poop without a screen." },
-                    { q: "You sat down to watch a movie on Netflix. But the moment there's a 10-second slow scene, your hand automatically reaches for your phone...", a: "【Dual Wielding】TV on, phone in hand. Consuming double the content at once.", b: "Total Dopamine Bankruptcy. Your attention span is officially shorter than a goldfish.", osB: "Sanity +10. Fighting a lonely holy war against Big Tech algorithms." },
-                    { q: "You’re waiting at a 90-second red light. Everyone around you pulls out their phone, and your pocket starts itching...", a: "【Check the Phone】Unlock it just to check notifications (there are none).", b: "【Stare into Space】Keep your hands in your pockets, watch the countdown.", osA: "We’re so cooked. Bro can’t even survive 90 seconds of boredom. Dopamine slave behavior.", osB: "Sanity +10. You just saved your brain from an extra dose of digital pollution." }
+                    /* ✅ 修正：補上正確的 b 選項文字、osA、osB */
+                    { q: "You sat down to watch a movie on Netflix. But the moment there's a 10-second slow scene, your hand automatically reaches for your phone...", a: "【Dual Wielding】TV on, phone in hand. Consuming double the content at once.", b: "【Hide the Phone】Flip it face-down on the other end of the couch and force yourself to watch.", osA: "Total Dopamine Bankruptcy. Your attention span is officially shorter than a goldfish.", osB: "Sanity +10. Fighting a lonely holy war against Big Tech algorithms." },
+                    { q: "You're waiting at a 90-second red light. Everyone around you pulls out their phone, and your pocket starts itching...", a: "【Check the Phone】Unlock it just to check notifications (there are none).", b: "【Stare into Space】Keep your hands in your pockets, watch the countdown.", osA: "We're so cooked. Bro can't even survive 90 seconds of boredom. Dopamine slave behavior.", osB: "Sanity +10. You just saved your brain from an extra dose of digital pollution." }
                 ],
                 results: [
                     { title: "🧠 Brain Cooked", desc: "You are a total slave to dopamine! Your brain resembles a pizza microwaved 10 times. Toss your phone in the toilet now." },
@@ -209,13 +204,10 @@
             }
         };
 
-        
-function toggleLanguage() {
-            if (currentStep > 0) return; // 1. 開始測驗後禁止切換語言，防止題目對不上
+        function toggleLanguage() {
+            if (currentStep > 0) return;
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
             document.getElementById('langBtn').innerText = currentLang === 'zh' ? '🌐 EN' : '🌐 中文';
-            
-            // 5. 語言切換時，標題與歡迎文字完美全同步
             document.getElementById('tSub').innerText = data[currentLang].startSub;
             document.getElementById('tTitle').innerText = data[currentLang].startTitle;
             document.getElementById('tDesc').innerText = data[currentLang].startDesc;
@@ -223,19 +215,18 @@ function toggleLanguage() {
         }
 
         function startTest() {
-            score = 0; // 2. 確保每次開始測驗時 score 重置
+            score = 0;
             currentStep = 0;
-            document.getElementById('langBtn').disabled = true; // 鎖定語言按鈕
+            document.getElementById('langBtn').disabled = true;
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('quizScreen').style.display = 'block';
-            document.getElementById('progressContainer').style.display = 'block'; // 6. 秀出進度條
+            document.getElementById('progressContainer').style.display = 'block';
             updateQuestion();
         }
 
         function updateQuestion() {
             let qList = data[currentLang].questions;
             if(currentStep < qList.length) {
-                // 更新進度條長度
                 let progressPercent = (currentStep / qList.length) * 100;
                 document.getElementById('progressBar').style.width = progressPercent + '%';
 
@@ -244,7 +235,6 @@ function toggleLanguage() {
                 document.getElementById('optB').innerText = qList[currentStep].b;
                 document.getElementById('osBox').style.display = 'none';
                 
-                // 恢復按鈕可點擊狀態
                 document.getElementById('optA').disabled = false;
                 document.getElementById('optB').disabled = false;
                 isClickable = true;
@@ -254,17 +244,15 @@ function toggleLanguage() {
         }
 
         function choose(option) {
-            if (!isClickable) return; // 4. 使用者防連點機制
+            if (!isClickable) return;
             isClickable = false;
             
-            // 鎖定按鈕防止連點
             document.getElementById('optA').disabled = true;
             document.getElementById('optB').disabled = true;
 
             let qList = data[currentLang].questions;
             let osText = option === 0 ? qList[currentStep].osA : qList[currentStep].osB;
             
-            // 選 B (理智抉擇) 加 10 分
             if(option === 1) score += 10;
             
             let osBox = document.getElementById('osBox');
@@ -287,11 +275,10 @@ function toggleLanguage() {
             document.getElementById('loadText').innerText = data[currentLang].loading;
             document.querySelector('.spinner').style.display = 'block';
 
-            // 7. 增加 2.5 秒假分析動畫，強力拉長網頁停留時間，衝高 AdSense 廣告費
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.display = 'none';
-                // 3. 完美切換結果算法
-                let res = score <= 10 ? data[currentLang].results[0] : data[currentLang].results[1];
+                /* ✅ 修正：score < 20 才顯示「大腦烤焦」（4題中少於2題選B） */
+                let res = score < 20 ? data[currentLang].results[0] : data[currentLang].results[1];
                 
                 document.getElementById('quizScreen').innerHTML = `
                     <h1>${res.title}</h1>
@@ -303,5 +290,8 @@ function toggleLanguage() {
         }
 
         function resetGame() {
-            location.reload(); // 全新重置
+            location.reload();
         }
+    </script>
+</body>
+</html>
